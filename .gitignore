@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 provenance_guard.db
 .DS_Store
+training/data/

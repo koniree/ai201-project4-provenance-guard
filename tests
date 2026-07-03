@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Sample /submit requests covering clear-AI, clear-human, and borderline cases.
+# Usage: ./tests [base_url]
+set -euo pipefail
+
+URL="${1:-http://127.0.0.1:5050}/submit"
+
+run_case() {
+  local label="$1"
+  local text="$2"
+  echo "=== $label ==="
+  jq -n --arg text "$text" --arg creator_id "test-user" '{text: $text, creator_id: $creator_id}' \
+    | curl -s -X POST "$URL" -H "Content-Type: application/json" -d @- \
+    | jq '{attribution, confidence, label, signals}'
+  echo
+}
+
+run_case "Clearly AI-generated (expect high)" \
+"Artificial intelligence represents a transformative paradigm shift in modern society. It is important to note that while the benefits of AI are numerous, it is equally essential to consider the ethical implications. Furthermore, stakeholders across various sectors must collaborate to ensure responsible deployment."
+
+run_case "Clearly human-written (expect low)" \
+"ok so i finally tried that new ramen place downtown and honestly? underwhelming. the broth was fine but they put WAY too much sodium in it and i was thirsty for like three hours after. my friend got the spicy version and said it was better. probably won't go back unless someone drags me there"
+
+run_case "Borderline: formal human writing (may score mid-high)" \
+"The relationship between monetary policy and asset price inflation has been extensively studied in the literature. Central banks face a fundamental tension between their mandate for price stability and the unintended consequences of prolonged low interest rates on equity and real estate valuations."
+
+run_case "Borderline: lightly edited AI output (expect mid-range)" \
+"I've been thinking a lot about remote work lately. There are genuine tradeoffs — flexibility and no commute on one side, isolation and blurred work-life boundaries on the other. Studies show productivity varies widely by individual and role type."

@@ -376,13 +376,24 @@ Then run the server:
 python app.py
 ```
 
-Server runs at `http://localhost:5000`. Test with:
+Server runs at `http://localhost:5050`. Test with:
 
 ```bash
-curl -s -X POST http://localhost:5000/submit \
+curl -s -X POST http://localhost:5050/submit \
   -H "Content-Type: application/json" \
   -d '{"text": "Your text here", "creator_id": "test-user-1"}' \
   | python -m json.tool
+```
+
+### Running the test cases
+
+`tests` is a bash script that submits four sample texts (clear-AI, clear-human,
+and two borderline cases) to `/submit` and prints each response. Requires `jq`
+and a running server (`python app.py`).
+
+```bash
+./tests                        # defaults to http://127.0.0.1:5050
+./tests http://127.0.0.1:5050  # or pass a base URL explicitly
 ```
 
 ## Endpoints
